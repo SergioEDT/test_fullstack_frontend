@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="title-container">
+    <p>Consulta de facturas</p>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="dateForm" (ngSubmit)="onSubmit()" class="form">
+      <div class="form-group">
+        <label for="startDate">Fecha de inicio:</label>
+        <input type="date" id="startDate" formControlName="startDate" required>
+        <div *ngIf="dateForm.controls['startDate'].errors && dateForm.controls['startDate'].touched" class="text-danger">
+          Debe ingresar una fecha de inicio
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="endDate">Fecha de fin:</label>
+        <input type="date" id="endDate" formControlName="endDate" required>
+        <div *ngIf="dateForm.controls['endDate'].errors && dateForm.controls['endDate'].touched" class="text-danger">
+          Debe ingresar una fecha de fin
+        </div>
+        
+      </div>
+      <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+    <div *ngIf="dateForm.hasError('invalidDateRange')" class="text-danger">
+      La fecha de fin debe ser posterior o igual a la fecha de inicio.
+    </div>
+  </div>
+  
+  <div class="table-container" *ngIf="pagedInvoices.length > 0; else noDataTemplate">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            <div class="filter-container">
+              <p>ID</p>
+              <input type="text" (input)="setPage(1)" [(ngModel)]="filters.id" placeholder="ID">
+            </div>
+          </th>
+          <th>
+            <div class="filter-container">
+              <p>Fecha de Factura</p>
+            </div>
+          </th>
+          <th>
+            <div class="filter-container">
+              <p>Número de Factura</p>
+            </div>
+          </th>
+          <th>
+            <div class="filter-container">
+              <p>Estado</p>
+            </div>
+          </th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invoice of pagedInvoices">
+          <td>{{ invoice.id }}</td>
+          <td>{{ invoice.invoice_date | date:'dd-MM-yyyy' }}</td>
+          <td>{{ invoice.invoice_number }}</td>
+          <td>{{ invoice.status }}</td>
+          <td>$ {{ invoice.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Controles de paginación -->
+  <div class="pagination-container" *ngIf="invoices.length > 0">
+    <div>Pagina <b>{{ currentPage }}</b> de <b>{{ totalPages }}</b></div>
+    <div>
+      <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1">Anterior</button>
+        <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages">Siguiente</button>
+    </div>
+  </div>
+
+  <ng-template #noDataTemplate>
+    <p>No hay información para mostrar</p>
+  </ng-template>
+</div>
